@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{ APP_NAME }} — {{ T["token_title"] }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"/>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-top-left">
+        <div class="chip"><span>{{ T["utc"] }}</span><b id="utcLive">--:--:--</b></div>
+        <div class="chip"><span>{{ T["points"] }}:</span><b id="pointsLive">{{ me.points if me else 0 }}</b></div>
+        {% if me %}
+          <div class="chip"><span>{{ T["streak"] }}:</span><b id="streakLive">{{ me.checkin_streak }}</b>/{{ CHECKIN_MAX_STREAK }}</div>
+        {% endif %}
+      </div>
+
+      <div class="nav-top-right">
+        <div class="chip langwrap">
+          <span>{{ T["lang"] }}</span>
+          <a class="langbtn {{ 'active' if lang=='en' else '' }}" href="/?lang=en">EN</a>
+          <a class="langbtn {{ 'active' if lang=='ja' else '' }}" href="/?lang=ja">JA</a>
+          <a class="langbtn {{ 'active' if lang=='zh' else '' }}" href="/?lang=zh">ZH</a>
+          <a class="langbtn {{ 'active' if lang=='kr' else '' }}" href="/?lang=kr">KR</a>
+        </div>
+
+        {% if me %}
+          <form method="post" action="/logout?lang={{lang}}" style="display:flex;gap:10px;align-items:center;margin:0;">
+            <div class="chip">@{{ me.handle }}</div>
+            <button class="btn secondary" type="submit">{{ T["logout"] }}</button>
+          </form>
+        {% else %}
+          <form method="post" action="/login?lang={{lang}}" style="display:flex;gap:10px;align-items:center;margin:0;">
+            <input class="input" name="handle" placeholder="{{ T['login_ph'] }}" maxlength="48" autocomplete="off"/>
+            <button class="btn" type="submit">{{ T["login"] }}</button>
+          </form>
+        {% endif %}
+
+        <a class="btn secondary" href="/?lang={{lang}}">{{ T["back_home"] }}</a>
+      </div>
+
+      <div class="nav-brand">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2c-4.1 0-7.4 3-7.4 6.9 0 5.7 7.4 15.1 7.4 15.1S19.4 14.6 19.4 8.9C19.4 5 16.1 2 12 2Z" fill="#031018" opacity=".96"/>
+              <circle cx="12" cy="9" r="2.6" fill="white" opacity=".92"/>
+              <path d="M12 0.9v3.1M12 20v3.1M0.9 12h3.1M20 12h3.1" stroke="white" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="9" stroke="white" stroke-opacity=".18"/>
+            </svg>
+          </div>
+          <div>
+            <h1><span class="thin">Pin</span><span class="hot">point</span></h1>
+            <div class="tag">{{ T["tagline"] }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero" style="margin-top:18px;">
+      <div class="hero-inner" style="grid-template-columns:1fr;">
+        <div class="card">
+          <h3 style="margin:0 0 10px 0">{{ T["token_title"] }}</h3>
+          <div style="color:rgba(234,242,255,.78);line-height:1.7">
+            <div>• {{ T["token_p1"] }}</div>
+            <div>• {{ T["token_p2"] }}</div>
+            <div>• {{ T["token_p3"] }}</div>
+            <div style="margin-top:8px"><b>{{ T["token_ratio"] }}</b></div>
+          </div>
+          <div style="margin-top:14px">
+            <a class="btn secondary" href="/?lang={{lang}}">{{ T["back_home"] }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      {{ APP_NAME }} · {{ TOKEN_SYMBOL }}
+    </div>
+  </div>
+
+  <script>
+    function tickUTC(){
+      const d = new Date();
+      const el = document.getElementById("utcLive");
+      if(el) el.textContent = d.toISOString().slice(0,19).replace('T',' ');
+    }
+    tickUTC(); setInterval(tickUTC, 1000);
+  </script>
+</body>
+</html>

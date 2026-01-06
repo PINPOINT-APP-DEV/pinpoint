@@ -1,0 +1,29 @@
+/* patch_ui.css
+   Mobile posting UI + feed compact + tab alignment.
+   Safe overrides only.
+*/
+.tabs{ gap:8px; }
+.tab{ padding:9px 12px; }
+
+.composer textarea{
+  min-height: 84px;
+  font-size: 15px;
+}
+.composer .composer-actions{
+  margin-top: 8px;
+}
+
+.feed .card{
+  padding: 10px 12px;
+}
+.feed .body{
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@media (max-width: 860px){
+  .tabs{ padding:4px 6px; }
+  .composer textarea{ min-height: 110px; }
+  .actions .btn.mini{ padding:8px 10px; }
+  .feed .card{ border-radius:16px; }
+}

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{ APP_NAME }} — {{ T["tagline"] }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"/>
+  <link rel="stylesheet" href="/static/layout_fix.css">
+  <link rel="stylesheet" href="/static/kill_nav_follow.css">
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-top-left">
+        <div class="chip"><span>{{ T["utc"] }}</span><b id="utcLive">--:--:--</b></div>
+        <div class="chip"><span>{{ T["points"] }}:</span><b id="pointsLive">{{ me.points if me else 0 }}</b></div>
+        {% if me %}
+          <div class="chip"><span>{{ T["streak"] }}:</span><b id="streakLive">{{ me.checkin_streak }}</b>/{{ CHECKIN_MAX_STREAK }}</div>
+        {% endif %}
+      </div>
+
+      <div class="nav-top-right">
+        <div class="chip langwrap">
+          <span>{{ T["lang"] }}</span>
+          <a class="langbtn {{ 'active' if lang=='en' else '' }}" href="/?lang=en&tab={{tab}}">EN</a>
+          <a class="langbtn {{ 'active' if lang=='ja' else '' }}" href="/?lang=ja&tab={{tab}}">JA</a>
+          <a class="langbtn {{ 'active' if lang=='zh' else '' }}" href="/?lang=zh&tab={{tab}}">ZH</a>
+          <a class="langbtn {{ 'active' if lang=='kr' else '' }}" href="/?lang=kr&tab={{tab}}">KR</a>
+        </div>
+
+        {% if me %}
+          <button class="btn secondary" type="button" id="checkinBtn">{{ T["checkin"] }}</button>
+          <form method="post" action="/logout?lang={{lang}}&tab={{tab}}" style="display:flex;gap:10px;align-items:center;margin:0;">
+            <div class="chip">@{{ me.handle }}</div>
+            <button class="btn secondary" type="submit">{{ T["logout"] }}</button>
+          </form>
+        {% else %}
+          <form method="post" action="/login?lang={{lang}}&tab={{tab}}" style="display:flex;gap:10px;align-items:center;margin:0;">
+            <input class="input" name="handle" placeholder="{{ T['login_ph'] }}" maxlength="48" autocomplete="off"/>
+            <button class="btn" type="submit">{{ T["login"] }}</button>
+          </form>
+        {% endif %}
+        <a class="btn secondary tokenbtn" href="#token">{{ T["token"] }}</a>
+      </div>
+
+      <div class="nav-brand">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2c-4.1 0-7.4 3-7.4 6.9 0 5.7 7.4 15.1 7.4 15.1S19.4 14.6 19.4 8.9C19.4 5 16.1 2 12 2Z" fill="#031018" opacity=".96"/>
+              <circle cx="12" cy="9" r="2.6" fill="white" opacity=".92"/>
+              <path d="M12 0.9v3.1M12 20v3.1M0.9 12h3.1M20 12h3.1" stroke="white" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="9" stroke="white" stroke-opacity=".18"/>
+            </svg>
+          </div>
+          <div>
+            <h1><span class="thin">Pin</span><span class="hot">point</span></h1>
+            <div class="tag">{{ T["tagline"] }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-inner">
+        <div>
+          <h2 class="h-title">{{ T["headline"] }}</h2>
+          <p class="h-sub">{{ T["subhead"] }}</p>
+          <p class="h-sub" style="margin-top:0">{{ T["disclaimer"] }}</p>
+
+          <div class="tabs">
+            <a class="tab {{ 'active' if tab=='hot' else '' }}" href="/?lang={{lang}}&tab=hot">{{ T["tab_hot"] }}</a>
+            <a class="tab {{ 'active' if tab=='new' else '' }}" href="/?lang={{lang}}&tab=new">{{ T["tab_new"] }}</a>
+          </div>
+
+          <div class="badges">
+            <span class="badge">{{ T["how_chip1"] }}</span>
+            <span class="badge">{{ T["how_chip2"] }}</span>
+            <span class="badge">{{ T["how_chip3"] }}</span>
+            <span class="badge">{{ T["how_chip4"] }}</span>
+            <span class="badge dark">{{ T["reward_rules"] }}</span>
+          </div>
+
+          <div style="margin-top:14px;color:rgba(234,242,255,.70);font-size:13px;line-height:1.6">
+            <div>• {{ T["how_line1"] }}</div>
+            <div>• {{ T["how_line2"] }}</div>
+            <div>• {{ T["how_line3"] }}</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>{{ T["submit_tip"] }}</h3>
+
+          <form id="tipForm" method="post" action="/submit?lang={{lang}}&tab={{tab}}" enctype="multipart/form-data" novalidate>
+            <div class="grid2">
+              <input class="input" name="title" id="title" placeholder="{{ T['title_ph'] }}" maxlength="140"/>
+              <input class="input" name="link_url" id="link_url" placeholder="{{ T['link_ph'] }}" maxlength="500"/>
+              <input class="input" name="image_url" id="image_url" placeholder="{{ T['image_url_ph'] }}" maxlength="500"/>
+              <input class="input" name="tags" placeholder="{{ T['tags_ph'] }}" maxlength="200"/>
+            </div>
+
+            <div class="drop" id="dropZone" style="margin-top:10px;">
+              <div class="drop-top">
+                <div>
+                  <b>{{ T["upload_title"] }}</b>
+                  <small>{{ T["drop_here"] }} · PNG/JPG/WEBP/GIF</small>
+                </div>
+                <button class="btn secondary" type="button" id="removeBtn" style="display:none;">{{ T["remove"] }}</button>
+              </div>
+
+              <div class="file-row">
+                <input type="file" id="image_file" name="image_file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;"/>
+                <button class="btn secondary" type="button" id="chooseBtn">{{ T["choose_image"] }}</button>
+                <div class="file-fake">
+                  <span style="color:rgba(234,242,255,.72)" id="fileLabel">{{ T["no_file"] }}</span>
+                </div>
+              </div>
+
+              <div class="preview" id="preview">
+                <img id="previewImg" alt="preview"/>
+              </div>
+            </div>
+
+            <textarea class="textarea" name="note" placeholder="{{ T['note_ph'] }}" style="margin-top:10px;"></textarea>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap">
+              <button class="btn" type="submit">{{ T["submit"] }}</button>
+              <div style="color:rgba(234,242,255,.55);font-size:12px">
+                +{{ REWARD_SUBMIT }} submit · author +{{ REWARD_LIKE_RECEIVED }} per like · voters +{{ REWARD_LIKE_GIVEN }}/+{{ REWARD_DISLIKE_GIVEN }}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="feed" id="feed">
+      {% for tip in tips %}
+        <div class="tip" data-tip-id="{{ tip.id }}" data-author="{{ tip.author.handle }}">
+          <div class="thumb">
+            {% if tip.thumb_path %}
+              <img src="{{ url_for('static', filename=tip.thumb_path) }}" alt="thumb"/>
+            {% elif tip.upload_path %}
+              <img src="{{ url_for('static', filename=tip.upload_path) }}" alt="thumb"/>
+            {% else %}
+              <div style="color:rgba(234,242,255,.55);font-size:12px">{{ T["no_image"] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="meta">
+            <h4>{{ tip.title }}</h4>
+            <div class="row">
+              {% if tip.link_url %}
+                <a class="pill" href="{{ tip.link_url }}" target="_blank" rel="noopener">{{ T["link_label"] }}</a>
+              {% endif %}
+              {% if tip.image_url %}
+                <a class="pill" href="{{ tip.image_url }}" target="_blank" rel="noopener">{{ T["image_label"] }}</a>
+              {% endif %}
+              {% if tip.tags %}
+                <span class="pill">{{ tip.tags }}</span>
+              {% endif %}
+              <span class="pill">{{ T["by"] }} @{{ tip.author.handle }}</span>
+              <span class="pill">{{ tip.created_at.strftime("%Y-%m-%d %H:%M") }}Z</span>
+            </div>
+            {% if tip.note %}
+              <div style="margin-top:10px;color:rgba(234,242,255,.72);font-size:13px;line-height:1.55">{{ tip.note }}</div>
+            {% endif %}
+          </div>
+
+          <div class="actions">
+            {% set liked = (tip.id in my_likes) %}
+            {% set disliked = (tip.id in my_dislikes) %}
+            <div class="voteRow">
+              <button class="votebtn like {{ 'on' if liked else '' }}" data-kind="like" data-on="{{ '1' if liked else '0' }}">
+                <span class="txt">{{ T["liked"] if liked else T["like"] }}</span>
+                <span class="pill">{{ T["likes"] }}: <b class="likeCount">{{ tip.likes_count }}</b></span>
+              </button>
+              <button class="votebtn dislike {{ 'on' if disliked else '' }}" data-kind="dislike" data-on="{{ '1' if disliked else '0' }}">
+                <span class="txt">{{ T["disliked"] if disliked else T["dislike"] }}</span>
+                <span class="pill">{{ T["dislikes"] }}: <b class="dislikeCount">{{ tip.dislikes_count }}</b></span>
+              </button>
+            </div>
+            <div class="kv">Tip #{{ tip.id }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="hero" id="token" style="margin-top:18px;">
+      <div class="hero-inner" style="grid-template-columns:1fr;">
+        <div class="card">
+          <h3 style="margin:0 0 10px 0">{{ T["token_title"] }}</h3>
+          <div style="color:rgba(234,242,255,.78);line-height:1.7">
+            <div>• {{ T["token_p1"] }}</div>
+            <div>• {{ T["token_p2"] }}</div>
+            <div>• {{ T["token_p3"] }}</div>
+            <div style="margin-top:8px"><b>{{ T["token_ratio"] }}</b></div>
+          </div>
+          <div style="margin-top:14px">
+            <a class="btn secondary" href="/?lang={{lang}}&tab={{tab}}">{{ T["back_home"] }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      {{ APP_NAME }} · {{ TOKEN_SYMBOL }} · local dev build
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const T = {{ T|tojson }};
+    const isLoggedIn = {{ 'true' if me else 'false' }};
+    const myHandle = {{ (me.handle if me else '')|tojson }};
+
+    function toast(msg){
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=>{ el.style.display="none"; }, 2200);
+    }
+
+    function tickUTC(){
+      const d = new Date();
+      document.getElementById("utcLive").textContent = d.toISOString().slice(0,19).replace('T',' ');
+    }
+    tickUTC(); setInterval(tickUTC, 1000);
+
+    const chooseBtn = document.getElementById("chooseBtn");
+    const removeBtn = document.getElementById("removeBtn");
+    const fileInput = document.getElementById("image_file");
+    const fileLabel = document.getElementById("fileLabel");
+    const preview = document.getElementById("preview");
+    const previewImg = document.getElementById("previewImg");
+    const dropZone = document.getElementById("dropZone");
+
+    function clearFile(){
+      fileInput.value = "";
+      fileLabel.textContent = T.no_file || "No file";
+      preview.style.display = "none";
+      previewImg.src = "";
+      removeBtn.style.display = "none";
+    }
+    function setFile(file){
+      if(!file) return;
+      fileLabel.textContent = file.name;
+      removeBtn.style.display = "inline-flex";
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      preview.style.display = "block";
+    }
+
+    chooseBtn?.addEventListener("click", ()=> fileInput.click());
+    removeBtn?.addEventListener("click", clearFile);
+    fileInput?.addEventListener("change", ()=> setFile(fileInput.files[0]));
+
+    ["dragenter","dragover"].forEach(ev=>{
+      dropZone?.addEventListener(ev, (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        dropZone.style.borderColor = "rgba(53,246,209,.9)";
+      });
+    });
+    ["dragleave","drop"].forEach(ev=>{
+      dropZone?.addEventListener(ev, (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        dropZone.style.borderColor = "rgba(53,246,209,.45)";
+      });
+    });
+    dropZone?.addEventListener("drop", (e)=>{
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if(!f) return;
+      const dt = new DataTransfer();
+      dt.items.add(f);
+      fileInput.files = dt.files;
+      setFile(f);
+    });
+
+    document.getElementById("tipForm")?.addEventListener("submit", (e)=>{
+      const title = (document.getElementById("title").value || "").trim();
+      const link = (document.getElementById("link_url").value || "").trim();
+      const imgUrl = (document.getElementById("image_url").value || "").trim();
+      const hasFile = fileInput.files && fileInput.files.length > 0;
+
+      if(!isLoggedIn){
+        e.preventDefault(); toast(T.toast_login_needed); return;
+      }
+      if(!title){
+        e.preventDefault(); toast(T.need_title); return;
+      }
+      if(!link && !imgUrl && !hasFile){
+        e.preventDefault(); toast(T.need_link_or_image); return;
+      }
+    });
+
+    async function vote(tipEl, kind){
+      if(!isLoggedIn){ toast(T.toast_login_needed); return; }
+      const author = tipEl.dataset.author || "";
+      if(author === myHandle){ toast(T.toast_self_vote); return; }
+
+      const tipId = tipEl.getAttribute("data-tip-id");
+      const fd = new FormData();
+      fd.append("tip_id", tipId);
+      fd.append("kind", kind);
+
+      const r = await fetch("/api/vote?lang={{lang}}", {method:"POST", body: fd});
+      const j = await r.json();
+      if(!j.ok){
+        if(j.code==="LOGIN_REQUIRED") toast(T.toast_login_needed);
+        else if(j.code==="SELF_VOTE") toast(T.toast_self_vote);
+        else toast("Error");
+        return;
+      }
+
+      tipEl.querySelector(".likeCount").textContent = j.likes;
+      tipEl.querySelector(".dislikeCount").textContent = j.dislikes;
+      document.getElementById("pointsLive").textContent = j.me_points;
+
+      const likeBtn = tipEl.querySelector(".votebtn.like");
+      const dislikeBtn = tipEl.querySelector(".votebtn.dislike");
+
+      function setBtn(btn, on, onText, offText){
+        btn.classList.toggle("on", on);
+        btn.dataset.on = on ? "1":"0";
+        btn.querySelector(".txt").textContent = on ? onText : offText;
+      }
+
+      if(j.removed === "like") setBtn(likeBtn, false, T.liked, T.like);
+      if(j.removed === "dislike") setBtn(dislikeBtn, false, T.disliked, T.dislike);
+
+      if(j.added === "like"){
+        setBtn(likeBtn, true, T.liked, T.like);
+        setBtn(dislikeBtn, false, T.disliked, T.dislike);
+        toast((T.toast_liked_author || "") + " " + (T.toast_voter_like || ""));
+      }else if(j.added === "dislike"){
+        setBtn(dislikeBtn, true, T.disliked, T.dislike);
+        setBtn(likeBtn, false, T.liked, T.like);
+        toast(T.toast_voter_dislike || "Done");
+      }else{
+        if(kind==="like") toast(T.toast_unliked);
+        else toast(T.toast_undisliked);
+      }
+    }
+
+    document.querySelectorAll(".tip").forEach(tipEl=>{
+      tipEl.querySelectorAll(".votebtn").forEach(btn=>{
+        btn.addEventListener("click", ()=> vote(tipEl, btn.dataset.kind));
+      });
+    });
+
+    const checkinBtn = document.getElementById("checkinBtn");
+    checkinBtn?.addEventListener("click", async ()=>{
+      if(!isLoggedIn){ toast(T.toast_login_needed); return; }
+      const r = await fetch("/api/checkin?lang={{lang}}", {method:"POST"});
+      const j = await r.json();
+      if(!j.ok){
+        toast(T.toast_checkin_already);
+        return;
+      }
+      document.getElementById("pointsLive").textContent = j.me_points;
+      const streakEl = document.getElementById("streakLive");
+      if(streakEl) streakEl.textContent = j.streak;
+      toast(`${T.toast_checkin_done} +${j.reward}`);
+    });
+  </script>
+</body>
+</html>
