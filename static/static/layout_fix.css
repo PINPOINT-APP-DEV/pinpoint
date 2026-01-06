@@ -1,0 +1,134 @@
+/* layout_fix.css
+   Purpose: Disable fixed overlay panels that follow scroll and block posting.
+   - Desktop: fixed -> sticky
+   - Mobile: panel becomes normal top block (no overlay)
+*/
+
+.sidebar,
+.side,
+.right,
+.right-col,
+.right-panel,
+.aside,
+.sticky-box,
+.floating,
+.floating-box,
+.topbox,
+.top-box,
+.stats,
+.status,
+.profile-box,
+.user-box,
+.panel,
+.card-panel,
+.chip-panel {
+  position: sticky !important;
+  top: 12px !important;
+  z-index: 2;
+}
+
+.sidebar[style*="position:fixed"],
+.side[style*="position:fixed"],
+.right[style*="position:fixed"],
+.aside[style*="position:fixed"],
+.panel[style*="position:fixed"],
+.stats[style*="position:fixed"] {
+  position: sticky !important;
+  top: 12px !important;
+}
+
+.sidebar,
+.side,
+.right,
+.right-col,
+.right-panel,
+.aside,
+.panel {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.container,
+.wrap,
+.wrapper,
+.layout,
+.main,
+.content {
+  overflow: visible;
+}
+
+@media (max-width: 860px) {
+  .layout,
+  .wrap,
+  .wrapper,
+  .container {
+    display: block !important;
+  }
+
+  .sidebar,
+  .side,
+  .right,
+  .right-col,
+  .right-panel,
+  .aside,
+  .panel,
+  .stats,
+  .status,
+  .profile-box,
+  .user-box,
+  .chip-panel {
+    position: static !important;
+    top: auto !important;
+    width: 100% !important;
+    margin: 10px 0 12px 0 !important;
+  }
+}
+
+@media (min-width: 861px) {
+  .sidebar,
+  .side,
+  .right,
+  .right-col,
+  .right-panel,
+  .aside,
+  .panel,
+  .stats {
+    position: sticky !important;
+    top: 12px !important;
+  }
+}
+
+.floating,
+.floating-box,
+.overlay,
+.modal-backdrop {
+  pointer-events: none;
+}
+.modal,
+.dialog {
+  pointer-events: auto;
+}
+
+/* --- mobile header horizontal overflow fix (v2601071320 hotfix v3) ---
+   Prevent ONLY the top header/nav from creating horizontal overflow on mobile.
+*/
+html, body { overflow-x: hidden; }
+
+.container, .nav { max-width: 100%; box-sizing: border-box; }
+
+.nav { overflow-x: hidden; }
+
+.nav-top-left, .nav-top-right { min-width: 0; }
+
+.nav .chip { max-width: 100%; }
+
+.nav .chip b, .nav .chip span { min-width: 0; }
+
+#utcLive {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

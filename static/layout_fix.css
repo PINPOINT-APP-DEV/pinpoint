@@ -109,3 +109,14 @@
 .dialog {
   pointer-events: auto;
 }
+/* --- header overflow hotfix (mobile only) ---
+   Scope: ONLY the top header/nav area.
+   Goal: prevent horizontal overflow caused by fixed min-width inputs/buttons.
+   (No other UI/layout/functionality touched.)
+*/
+@media (max-width: 640px){
+  .nav{overflow-x:hidden;}
+  .nav-top-right, .nav-top-left{min-width:0;}
+  .nav-top-right form{flex-wrap:wrap; max-width:100%;}
+  .nav-top-right form .input{min-width:0; flex:1 1 160px; max-width:100%;}
+}

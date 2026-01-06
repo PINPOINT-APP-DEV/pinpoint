@@ -1,0 +1,9 @@
+PINPOINT Mobile Hotfix v1 (Overflow only)
+
+Goal:
+- Fix ONLY the top area overflowing horizontally on mobile.
+- No layout redesign, no feature changes.
+
+Apply:
+- Overwrite: templates/index.html (adds 1 CSS link)
+- Add: static/pinpoint_hotfix_overflow_v1.css

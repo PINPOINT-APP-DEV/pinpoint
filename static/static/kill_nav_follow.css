@@ -1,0 +1,39 @@
+/* kill_nav_follow.css
+   Purpose: Force top nav/header to STOP following scroll.
+   This overrides position: fixed/sticky on nav/header elements.
+*/
+
+/* Kill common nav/header selectors */
+nav,
+.nav,
+.navbar,
+.header,
+.top,
+.topbar,
+.app-header {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: auto !important;
+}
+
+/* If wrapped inside container */
+.container > nav,
+.container > .nav {
+  position: static !important;
+}
+
+/* Mobile: extra hard kill */
+@media (max-width: 860px) {
+  nav,
+  .nav,
+  .navbar,
+  .header,
+  .top,
+  .topbar,
+  .app-header {
+    position: static !important;
+    top: auto !important;
+  }
+}

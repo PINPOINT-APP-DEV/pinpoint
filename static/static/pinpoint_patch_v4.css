@@ -1,0 +1,46 @@
+/* Pinpoint Patch v4 CLEAN
+   - fixes mobile right-cut
+   - images: contain + modal
+*/
+html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+*{ box-sizing:border-box; }
+.container{ width:100%; max-width:1100px; margin:0 auto; padding-left:12px; padding-right:12px; }
+.nav, .nav-top-left, .nav-top-right, .formRow, .submitRow{ flex-wrap:wrap !important; max-width:100%; }
+input, textarea, select, button{ max-width:100%; min-width:0; }
+@media (max-width:820px){
+  .hero-inner{ grid-template-columns:1fr !important; }
+  .formRow>*, .submitRow>*{ flex:1 1 100% !important; min-width:0 !important; }
+  .btn{ width:100%; }
+}
+.tip .thumb{ height:auto !important; }
+.tip img.tipImg{ width:100%; height:auto !important; object-fit:contain !important; display:block; cursor:zoom-in; background:rgba(0,0,0,.18); border-radius:14px; }
+.pp-modal{ position:fixed; inset:0; background:rgba(0,0,0,.82); display:none; align-items:center; justify-content:center; z-index:9999; padding:14px; }
+.pp-modal.on{ display:flex; }
+.pp-modal img{ max-width:100%; max-height:100%; border-radius:14px; }
+.pp-modal .close{ position:absolute; top:12px; right:12px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.10); color:rgba(255,255,255,.92); padding:10px 12px; border-radius:999px; font-weight:800; }
+
+
+/* v4.4 overflow hotfix (hero + upload only) */
+.hero, .hero-inner, .hero-inner > div{ max-width:100%; min-width:0; }
+.hero .h-title, .hero .h-sub{ overflow-wrap:anywhere; word-break:break-word; }
+.hero .tabs{ max-width:100%; flex-wrap:wrap; }
+.hero .tab{ white-space:normal; }
+
+/* Upload box overflow */
+.drop, .drop-top, .file-row, .file-fake{ max-width:100%; min-width:0; }
+.drop-top small{ display:block; overflow-wrap:anywhere; word-break:break-word; }
+.file-row{ flex-wrap:wrap !important; gap:10px; }
+.file-fake{ flex:1 1 180px; overflow:hidden; }
+.file-fake span{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+
+/* v4.5: Fix submit form 2-col inputs overflowing on mobile */
+.grid2{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width:100%;
+}
+@media (max-width: 820px){
+  .grid2{ grid-template-columns: 1fr; }
+}

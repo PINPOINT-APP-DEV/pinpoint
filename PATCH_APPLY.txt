@@ -1,0 +1,7 @@
+PINPOINT Patch v4.5.1 (HOTFIX)
+
+Fix:
+- IndentationError in api_vote (points_before / rewarded)
+
+Overwrite:
+- app.py

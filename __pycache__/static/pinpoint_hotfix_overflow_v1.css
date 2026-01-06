@@ -1,0 +1,36 @@
+/* Pinpoint mobile overflow hotfix v1
+   Scope: ONLY prevent horizontal overflow on small screens.
+*/
+html, body { overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Common offenders: flex rows with min-width pills / chips */
+@media (max-width: 560px){
+  body { overflow-x: hidden; }
+
+  /* Ensure primary wrappers can't exceed viewport */
+  .container, .nav, .panel, .hero, .card, .section, .wrap, .content {
+    max-width: 100%;
+  }
+
+  /* If a header/nav row is flex, allow wrapping */
+  .nav, .nav-right, .top, .topbar, .header, .header-row, .row {
+    flex-wrap: wrap;
+  }
+
+  /* Pills/buttons/inputs should not force overflow */
+  button, a, input, select, textarea {
+    max-width: 100%;
+  }
+
+  /* Any long tokens/handles should wrap instead of pushing layout */
+  .chip, .pill, .badge, .btn, .input, .stat, .label {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* As a final safeguard: clip internal overflow on the very top area */
+  .nav, .top, .topbar, header {
+    overflow-x: clip;
+  }
+}
